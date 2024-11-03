@@ -2,11 +2,12 @@
 
 #include "tensor.h"
 
+
 int main() {
-    Tensor a(1, 4);
-    Tensor b(2.f, 4);
-    Tensor c{1, 2, 3, 4};
-    Tensor v = 10.f * (a.cast<float>() - b.sqrt()) + c;
+    Tensor a{1, 2, 3, 4};
+    Tensor b{1, 4, 9, 16};
+    Tensor c(-2, 4);
+    Tensor v = ~(+a - b.sqrt()).cast<bool>() & (10 * abs(c));
     std::cout << v;
 
     return 0;

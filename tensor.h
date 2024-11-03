@@ -10,12 +10,323 @@
 
 
 namespace detail {
-    template <typename Derived>
-    struct Expr;
+    template <numeric T, typename E>
+    struct CastExpr;
+
+    template <typename E, typename Op>
+    struct UnaryExpr;
+
+    template <typename L, typename R, typename Op>
+    struct BinaryExpr;
+
+
+    struct Expr {
+        template <typename Self>
+        [[nodiscard]] constexpr bool any(this const Self& self) {
+            for (size_t i = 0; i < self.size(); ++i) {
+                if (self[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr bool all(this const Self& self) {
+            for (size_t i = 0; i < self.size(); ++i) {
+                if (!self[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        template <numeric T, typename Self>
+        [[nodiscard]] constexpr auto cast(this const Self& self) {
+            return CastExpr<T, Self>{self};
+        }
+
+        template <typename Self>
+        requires integral<typename Self::element_type>
+        [[nodiscard]] constexpr auto operator~(this const Self& self) {
+            return UnaryExpr{self, ComplOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto operator+(this const Self& self) {
+            return self;
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto operator-(this const Self& self) {
+            return UnaryExpr{self, NegOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto abs(this const Self& self) {
+            return UnaryExpr{self, AbsOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto sqrt(this const Self& self) {
+            return UnaryExpr{self, SqrtOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto exp(this const Self& self) {
+            return UnaryExpr{self, ExpOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto log(this const Self& self) {
+            return UnaryExpr{self, LogOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto sin(this const Self& self) {
+            return UnaryExpr{self, SinOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto cos(this const Self& self) {
+            return UnaryExpr{self, CosOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto tan(this const Self& self) {
+            return UnaryExpr{self, TanOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto asin(this const Self& self) {
+            return UnaryExpr{self, AsinOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto acos(this const Self& self) {
+            return UnaryExpr{self, AcosOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto atan(this const Self& self) {
+            return UnaryExpr{self, AtanOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto sinh(this const Self& self) {
+            return UnaryExpr{self, SinhOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto cosh(this const Self& self) {
+            return UnaryExpr{self, CoshOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto tanh(this const Self& self) {
+            return UnaryExpr{self, TanhOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto asinh(this const Self& self) {
+            return UnaryExpr{self, AsinhOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto acosh(this const Self& self) {
+            return UnaryExpr{self, AcoshOp{}};
+        }
+
+        template <typename Self>
+        [[nodiscard]] constexpr auto atanh(this const Self& self) {
+            return UnaryExpr{self, AtanhOp{}};
+        }
+
+        template <typename Self, typename R>
+        requires std::derived_from<R, Expr> || numeric<R>
+        [[nodiscard]] constexpr auto pow(this const Self& self, const R& rhs) {
+            return BinaryExpr{self, rhs, PowOp{}};
+        }
+    };
+
+    [[nodiscard]] constexpr auto any(const std::derived_from<Expr> auto& expr) {
+        return expr.any();
+    }
+
+    [[nodiscard]] constexpr auto all(const std::derived_from<Expr> auto& expr) {
+        return expr.all();
+    }
+
+    [[nodiscard]] constexpr auto abs(const std::derived_from<Expr> auto& expr) {
+        return expr.abs();
+    }
+
+    [[nodiscard]] constexpr auto sqrt(const std::derived_from<Expr> auto& expr) {
+        return expr.sqrt();
+    }
+
+    [[nodiscard]] constexpr auto exp(const std::derived_from<Expr> auto& expr) {
+        return expr.exp();
+    }
+
+    [[nodiscard]] constexpr auto log(const std::derived_from<Expr> auto& expr) {
+        return expr.log();
+    }
+
+    [[nodiscard]] constexpr auto sin(const std::derived_from<Expr> auto& expr) {
+        return expr.sin();
+    }
+
+    [[nodiscard]] constexpr auto cos(const std::derived_from<Expr> auto& expr) {
+        return expr.cos();
+    }
+
+    [[nodiscard]] constexpr auto tan(const std::derived_from<Expr> auto& expr) {
+        return expr.tan();
+    }
+
+    [[nodiscard]] constexpr auto asin(const std::derived_from<Expr> auto& expr) {
+        return expr.asin();
+    }
+
+    [[nodiscard]] constexpr auto acos(const std::derived_from<Expr> auto& expr) {
+        return expr.acos();
+    }
+
+    [[nodiscard]] constexpr auto atan(const std::derived_from<Expr> auto& expr) {
+        return expr.atan();
+    }
+
+    [[nodiscard]] constexpr auto sinh(const std::derived_from<Expr> auto& expr) {
+        return expr.sinh();
+    }
+
+    [[nodiscard]] constexpr auto cosh(const std::derived_from<Expr> auto& expr) {
+        return expr.cosh();
+    }
+
+    [[nodiscard]] constexpr auto tanh(const std::derived_from<Expr> auto& expr) {
+        return expr.tanh();
+    }
+
+    [[nodiscard]] constexpr auto asinh(const std::derived_from<Expr> auto& expr) {
+        return expr.asinh();
+    }
+
+    [[nodiscard]] constexpr auto acosh(const std::derived_from<Expr> auto& expr) {
+        return expr.acosh();
+    }
+
+    [[nodiscard]] constexpr auto atanh(const std::derived_from<Expr> auto& expr) {
+        return expr.atanh();
+    }
+
+
+    template <typename L, typename R>
+    concept bitwise_compatible = std::derived_from<L, Expr> && integral<typename L::element_type> &&
+                                 (std::derived_from<R, Expr> && integral<typename R::element_type> || integral<R>) ||
+                                 integral<L> && std::derived_from<R, Expr> && integral<typename R::element_type>;
+
+    template <typename L, typename R>
+    requires bitwise_compatible<L, R>
+    [[nodiscard]] constexpr auto operator&(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, AndOp{}};
+    }
+
+    template <typename L, typename R>
+    requires bitwise_compatible<L, R>
+    [[nodiscard]] constexpr auto operator|(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, OrOp{}};
+    }
+
+    template <typename L, typename R>
+    requires bitwise_compatible<L, R>
+    [[nodiscard]] constexpr auto operator^(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, XorOp{}};
+    }
+
+
+    template <typename L, typename R>
+    concept binary_compatible = std::derived_from<L, Expr> && (std::derived_from<R, Expr> || numeric<R>) ||
+                                numeric<L> && std::derived_from<R, Expr>;
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator==(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, EqOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator!=(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, NeOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator<(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, LtOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator<=(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, LeOp{}};
+    }
+
+    template <typename L, typename R>
+    requires std::derived_from<L, Expr> && (std::derived_from<R, Expr> || numeric<R>) ||
+             numeric<L> && std::derived_from<R, Expr>
+    [[nodiscard]] constexpr auto operator>(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, GtOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator>=(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, GeOp{}};
+    }
+
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator+(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, AddOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator-(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, SubOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator*(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, MulOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator/(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, DivOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto operator%(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, ModOp{}};
+    }
+
+    template <typename L, typename R>
+    requires binary_compatible<L, R>
+    [[nodiscard]] constexpr auto pow(const L& lhs, const R& rhs) {
+        return BinaryExpr{lhs, rhs, PowOp{}};
+    }
 
 
     template <numeric T, typename E>
-    struct CastExpr : Expr<CastExpr<T, E>> {
+    struct CastExpr : Expr {
         using element_type = T;
 
 
@@ -33,16 +344,15 @@ namespace detail {
         const E& expr;
     };
 
-
-    template <typename Op, typename E>
-    struct UnaryExpr : Expr<UnaryExpr<Op, E>> {
+    template <typename E, typename Op>
+    struct UnaryExpr : Expr {
         using element_type = typename operator_result<Op, E>::type;
 
 
-        explicit constexpr UnaryExpr(const E& expr) : expr(expr) {}
+        constexpr UnaryExpr(const E& expr, Op op) : expr(expr), op(op) {}
 
         [[nodiscard]] constexpr auto operator[](size_t i) const {
-            return Op{}(expr[i]);
+            return op(expr[i]);
         }
 
         [[nodiscard]] constexpr size_t size() const {
@@ -51,23 +361,24 @@ namespace detail {
 
     private:
         const E& expr;
+        [[no_unique_address]] Op op;
     };
 
-    template <typename Op, typename L, typename R>
-    struct BinaryExpr : Expr<BinaryExpr<Op, L, R>> {
+    template <typename L, typename R, typename Op>
+    struct BinaryExpr : Expr {
         using element_type = typename operator_result<Op, L, R>::type;
 
 
-        constexpr BinaryExpr(const L& lhs, const R& rhs) : lhs(lhs), rhs(rhs) {}
+        constexpr BinaryExpr(const L& lhs, const R& rhs, Op op) : lhs(lhs), rhs(rhs), op(op) {}
 
         [[nodiscard]] constexpr auto operator[](size_t i) const {
             if constexpr (numeric<L>) {
-                return Op{}(lhs, rhs[i]);
+                return op(lhs, rhs[i]);
             } else {
                 if constexpr (numeric<R>) {
-                    return Op{}(lhs[i], rhs);
+                    return op(lhs[i], rhs);
                 } else {
-                    return Op{}(lhs[i], rhs[i]);
+                    return op(lhs[i], rhs[i]);
                 }
             }
         }
@@ -86,358 +397,13 @@ namespace detail {
 
         node_type<L> lhs;
         node_type<R> rhs;
-    };
-
-    template <typename E>
-    using NegExpr = UnaryExpr<NegOp, E>;
-
-    template <typename E>
-    using AbsExpr = UnaryExpr<AbsOp, E>;
-
-    template <typename E>
-    using SqrtExpr = UnaryExpr<SqrtOp, E>;
-
-    template <typename E>
-    using ExpExpr = UnaryExpr<ExpOp, E>;
-
-    template <typename E>
-    using LogExpr = UnaryExpr<LogOp, E>;
-
-    template <typename E>
-    using Log10Expr = UnaryExpr<Log10Op, E>;
-
-    template <typename E>
-    using SinExpr = UnaryExpr<SinOp, E>;
-
-    template <typename E>
-    using CosExpr = UnaryExpr<CosOp, E>;
-
-    template <typename E>
-    using TanExpr = UnaryExpr<TanOp, E>;
-
-    template <typename E>
-    using AsinExpr = UnaryExpr<AsinOp, E>;
-
-    template <typename E>
-    using AcosExpr = UnaryExpr<AcosOp, E>;
-
-    template <typename E>
-    using AtanExpr = UnaryExpr<AtanOp, E>;
-
-    template <typename E>
-    using SinhExpr = UnaryExpr<SinhOp, E>;
-
-    template <typename E>
-    using CoshExpr = UnaryExpr<CoshOp, E>;
-
-    template <typename E>
-    using TanhExpr = UnaryExpr<TanhOp, E>;
-
-    template <typename E>
-    using AsinhExpr = UnaryExpr<AsinhOp, E>;
-
-    template <typename E>
-    using AcoshExpr = UnaryExpr<AcoshOp, E>;
-
-    template <typename E>
-    using AtanhExpr = UnaryExpr<AtanhOp, E>;
-
-
-    template <typename L, typename R>
-    using AddExpr = BinaryExpr<AddOp, L, R>;
-
-    template <typename L, typename R>
-    using SubExpr = BinaryExpr<SubOp, L, R>;
-
-    template <typename L, typename R>
-    using MulExpr = BinaryExpr<MulOp, L, R>;
-
-    template <typename L, typename R>
-    using DivExpr = BinaryExpr<DivOp, L, R>;
-
-    template <typename L, typename R>
-    using ModExpr = BinaryExpr<ModOp, L, R>;
-
-    template <typename B, typename E>
-    using PowExpr = BinaryExpr<PowOp, B, E>;
-
-
-    template <typename Derived>
-    struct Expr {
-        template <typename>
-        friend struct Expr;
-
-    private:
-        [[nodiscard]] const Derived& derived() const {
-            return static_cast<const Derived&>(*this);
-        };
-
-    public:
-        [[nodiscard]] constexpr auto operator[](size_t i) const {
-            return derived()[i];
-        }
-
-        [[nodiscard]] constexpr size_t size() const {
-            return derived().size();
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto cast() const {
-            return CastExpr<T, Derived>{derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] explicit operator T() const {
-            return cast<T>();
-        }
-
-        [[nodiscard]] auto operator-() const {
-            return NegExpr{derived()};
-        }
-
-        [[nodiscard]] auto abs() const {
-            return AbsExpr{derived()};
-        }
-
-        [[nodiscard]] auto sqrt() const {
-            return SqrtExpr{derived()};
-        }
-
-        [[nodiscard]] auto exp() const {
-            return ExpExpr{derived()};
-        }
-
-        [[nodiscard]] auto log() const {
-            return LogExpr{derived()};
-        }
-
-        [[nodiscard]] auto log10() const {
-            return Log10Expr{derived()};
-        }
-
-        [[nodiscard]] auto sin() const {
-            return SinExpr{derived()};
-        }
-
-        [[nodiscard]] auto cos() const {
-            return CosExpr{derived()};
-        }
-
-        [[nodiscard]] auto tan() const {
-            return TanExpr{derived()};
-        }
-
-        [[nodiscard]] auto asin() const {
-            return AsinExpr{derived()};
-        }
-
-        [[nodiscard]] auto acos() const {
-            return AcosExpr{derived()};
-        }
-
-        [[nodiscard]] auto atan() const {
-            return AtanExpr{derived()};
-        }
-
-        [[nodiscard]] auto sinh() const {
-            return SinhExpr{derived()};
-        }
-
-        [[nodiscard]] auto cosh() const {
-            return CoshExpr{derived()};
-        }
-
-        [[nodiscard]] auto tanh() const {
-            return TanhExpr{derived()};
-        }
-
-        [[nodiscard]] auto asinh() const {
-            return AsinhExpr{derived()};
-        }
-
-        [[nodiscard]] auto acosh() const {
-            return AcoshExpr{derived()};
-        }
-
-        [[nodiscard]] auto atanh() const {
-            return AtanhExpr{derived()};
-        }
-
-
-        [[nodiscard]] friend auto abs(const Expr& self) {
-            return self.abs();
-        }
-
-        [[nodiscard]] friend auto sqrt(const Expr& self) {
-            return self.sqrt();
-        }
-
-        [[nodiscard]] friend auto exp(const Expr& self) {
-            return self.exp();
-        }
-
-        [[nodiscard]] friend auto log(const Expr& self) {
-            return self.log();
-        }
-
-        [[nodiscard]] friend auto log10(const Expr& self) {
-            return self.log10();
-        }
-
-        [[nodiscard]] friend auto sin(const Expr& self) {
-            return self.sin();
-        }
-
-        [[nodiscard]] friend auto cos(const Expr& self) {
-            return self.cos();
-        }
-
-        [[nodiscard]] friend auto tan(const Expr& self) {
-            return self.tan();
-        }
-
-        [[nodiscard]] friend auto asin(const Expr& self) {
-            return self.asin();
-        }
-
-        [[nodiscard]] friend auto acos(const Expr& self) {
-            return self.acos();
-        }
-
-        [[nodiscard]] friend auto atan(const Expr& self) {
-            return self.atan();
-        }
-
-        [[nodiscard]] friend auto sinh(const Expr& self) {
-            return self.sinh();
-        }
-
-        [[nodiscard]] friend auto cosh(const Expr& self) {
-            return self.cosh();
-        }
-
-        [[nodiscard]] friend auto tanh(const Expr& self) {
-            return self.tanh();
-        }
-
-        [[nodiscard]] friend auto asinh(const Expr& self) {
-            return self.asinh();
-        }
-
-        [[nodiscard]] friend auto acosh(const Expr& self) {
-            return self.acosh();
-        }
-
-        [[nodiscard]] friend auto atanh(const Expr& self) {
-            return self.atanh();
-        }
-
-
-        template <typename R>
-        [[nodiscard]] auto operator+(const Expr<R>& rhs) const {
-            return AddExpr{derived(), rhs.derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto operator+(T rhs) const {
-            return AddExpr{derived(), rhs};
-        }
-
-        template <numeric T>
-        [[nodiscard]] friend auto operator+(T lhs, const Expr& rhs) {
-            return AddExpr{lhs, rhs.derived()};
-        }
-
-
-        template <typename R>
-        [[nodiscard]] auto operator-(const Expr<R>& rhs) const {
-            return SubExpr{derived(), rhs.derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto operator-(T rhs) const {
-            return SubExpr{derived(), rhs};
-        }
-
-        template <numeric T>
-        [[nodiscard]] friend auto operator-(T lhs, const Expr& rhs) {
-            return SubExpr{lhs, rhs.derived()};
-        }
-
-
-        template <typename R>
-        [[nodiscard]] auto operator*(const Expr<R>& rhs) const {
-            return MulExpr{derived(), rhs.derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto operator*(T rhs) const {
-            return MulExpr{derived(), rhs};
-        }
-
-        template <numeric T>
-        [[nodiscard]] friend auto operator*(T lhs, const Expr& rhs) {
-            return MulExpr{lhs, rhs.derived()};
-        }
-
-
-        template <typename R>
-        [[nodiscard]] auto operator/(const Expr<R>& rhs) const {
-            return DivExpr{derived(), rhs.derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto operator/(T rhs) const {
-            return DivExpr{derived(), rhs};
-        }
-
-        template <numeric T>
-        [[nodiscard]] friend auto operator/(T lhs, const Expr& rhs) {
-            return DivExpr{lhs, rhs.derived()};
-        }
-
-
-        template <typename R>
-        [[nodiscard]] auto operator%(const Expr<R>& rhs) const {
-            return ModExpr{derived(), rhs.derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto operator%(T rhs) const {
-            return ModExpr{derived(), rhs};
-        }
-
-        template <numeric T>
-        [[nodiscard]] friend auto operator%(T lhs, const Expr& rhs) {
-            return ModExpr{lhs, rhs.derived()};
-        }
-
-
-        template <typename R>
-        [[nodiscard]] auto pow(const Expr<R>& rhs) const {
-            return PowExpr{derived(), rhs.derived()};
-        }
-
-        template <numeric T>
-        [[nodiscard]] auto pow(T rhs) const {
-            return PowExpr{derived(), rhs};
-        }
-
-        template <numeric T>
-        [[nodiscard]] friend auto pow(T lhs, const Expr& rhs) {
-            return PowExpr{lhs, rhs.derived()};
-        }
-
-        template <typename R>
-        [[nodiscard]] friend auto pow(const Expr& lhs, R rhs) {
-            return lhs.pow(rhs);
-        }
+        [[no_unique_address]] Op op;
     };
 } // namespace detail
 
 
 template <detail::numeric T>
-struct Tensor : detail::Expr<Tensor<T>> {
+struct Tensor : detail::Expr {
     using element_type = T;
 
 
@@ -450,8 +416,7 @@ struct Tensor : detail::Expr<Tensor<T>> {
 
     Tensor(std::initializer_list<T> il) : elems(il) {}
 
-    template <typename Derived>
-    Tensor(const detail::Expr<Derived>& expr) : elems(expr.size()) {
+    Tensor(const std::derived_from<Expr> auto& expr) : elems(expr.size()) {
         for (size_t i = 0; i < size(); ++i) {
             elems[i] = expr[i];
         }
@@ -467,12 +432,9 @@ struct Tensor : detail::Expr<Tensor<T>> {
         return *this;
     }
 
-    [[nodiscard]] T operator[](size_t i) const {
-        return elems[i];
-    }
-
-    [[nodiscard]] T& operator[](size_t i) {
-        return elems[i];
+    template <typename Self>
+    [[nodiscard]] T operator[](this Self&& self, size_t i) {
+        return std::forward<Self>(self).elems[i];
     }
 
     [[nodiscard]] size_t size() const {
@@ -507,5 +469,6 @@ private:
 };
 
 
-template <typename Derived>
-Tensor(detail::Expr<Derived>) -> Tensor<typename Derived::element_type>;
+template <std::derived_from<detail::Expr> E>
+Tensor(E) -> Tensor<typename E::element_type>;
+

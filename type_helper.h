@@ -63,6 +63,6 @@ namespace detail {
 
     template <typename Op, typename... T>
     struct operator_result {
-        using type = decltype(std::declval<Op>()(std::declval<typename extract_element_type<T>::type>()...));
+        using type = decltype(Op{}(std::declval<typename extract_element_type<T>::type>()...));
     };
 } // namespace detail

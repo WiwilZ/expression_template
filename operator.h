@@ -6,8 +6,15 @@
 #include "type_helper.h"
 
 
-namespace  detail {
+namespace detail {
     /* Unary operators */
+    struct ComplOp {
+        template <integral T>
+        constexpr T operator()(T x) const {
+            return ~x;
+        }
+    };
+
     struct NegOp {
         template <numeric T>
         constexpr T operator()(T x) const {
@@ -136,6 +143,72 @@ namespace  detail {
 
 
     /* Binary operators */
+    /* Bitwise operators */
+    struct AndOp {
+        template <integral L, integral R>
+        constexpr bool operator()(L x, R y) const {
+            return x & y;
+        }
+    };
+
+    struct OrOp {
+        template <integral L, integral R>
+        constexpr bool operator()(L x, R y) const {
+            return x | y;
+        }
+    };
+
+    struct XorOp {
+        template <integral L, integral R>
+        constexpr bool operator()(L x, R y) const {
+            return x ^ y;
+        }
+    };
+
+    /* Comparison operators */
+    struct EqOp {
+        template <numeric L, numeric R>
+        constexpr bool operator()(L x, R y) const {
+            return x == y;
+        }
+    };
+
+    struct NeOp {
+        template <numeric L, numeric R>
+        constexpr bool operator()(L x, R y) const {
+            return x != y;
+        }
+    };
+
+    struct LtOp {
+        template <numeric L, numeric R>
+        constexpr bool operator()(L x, R y) const {
+            return x < y;
+        }
+    };
+
+    struct LeOp {
+        template <numeric L, numeric R>
+        constexpr bool operator()(L x, R y) const {
+            return x <= y;
+        }
+    };
+
+    struct GtOp {
+        template <numeric L, numeric R>
+        constexpr bool operator()(L x, R y) const {
+            return x > y;
+        }
+    };
+
+    struct GeOp {
+        template <numeric L, numeric R>
+        constexpr bool operator()(L x, R y) const {
+            return x >= y;
+        }
+    };
+
+    /* Arithmetic operators */
     struct AddOp {
         template <numeric L, numeric R>
         constexpr common_type_t<L, R> operator()(L x, R y) const {
@@ -172,18 +245,10 @@ namespace  detail {
     };
 
     struct PowOp {
-        template <typename B, typename E>
-        requires floating<B> || floating<E>
+        template <floating B, floating E>
         constexpr auto operator()(B base, E exp) const {
-            if constexpr (std::integral<E>) {
-                if (exp < 0) {
-                    return fast_pow(1 / base, static_cast<uint64_t>(-exp));
-                }
-                return fast_pow(base, exp);
-            } else {
-                using T = std::common_type_t<B, E>;
-                return std::pow(static_cast<T>(base), static_cast<T>(exp));
-            }
+            using T = std::common_type_t<B, E>;
+            return std::pow(static_cast<T>(base), static_cast<T>(exp));
         }
 
         template <integral B, unsigned_integral E>
@@ -193,8 +258,8 @@ namespace  detail {
         }
 
     private:
-        template <numeric T>
-        T fast_pow(T base, auto exp) {
+        template <integral T>
+        T fast_pow(T base, T exp) {
             T result = 1;
             while (exp != 0) {
                 if (exp & 1) {
